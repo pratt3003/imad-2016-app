@@ -5,12 +5,79 @@ var path = require('path');
 var app = express();
 app.use(morgan('combined'));
 
+var articles={
+ 'article1' : {              //object of first article
+	title:'Article one',
+	heading:'Article one',
+	date: 'some date',
+	content: `
+		<p>
+			First para
+		</p>
+
+		<p>
+			Second para
+		</p>
+	`
+}, 
+'article2':{},
+'article3':{}
+};
+
+function createTemplate(data){   //to reduce same html code, avoid writing same structure for each file
+	var title= data.title;
+	var date=data.date;
+	var heading=data.heading;
+	var content=data.content;
+
+	
+	var htmlTemplate= `
+
+		
+	<html>
+
+		<head>
+			<title>
+			 	${title}
+			</title>
+
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+			
+			<link rel="stylesheet"  href="ui/style.css">  <!-- this is a comment, this line to reuse css code -->
+		</head>   
+
+
+
+		<body>
+			<div class="container">
+			<a href="/"> home </a>
+
+			<h3>
+				${heading}
+			</h3>
+
+			<div> ${date}
+			</div>
+
+			<div>
+
+				${content}
+			</div>
+
+		</body>
+
+	</html>
+		`;
+	return htmlTemplate;
+}
+
+
+
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));
 });
-
-app.get('/article1', function (req, res) {
-  res.sendFile(path.join(__dirname, 'ui', 'article1.html'));
+/*app.get('/article1', function (req, res) {
+  res.send(createTemplate(article1));
 });
 
 app.get('/article2', function (req, res) {
@@ -19,6 +86,11 @@ app.get('/article2', function (req, res) {
 
 app.get('/article3', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'article3.html'));
+});
+*/
+app.get('/:articleName', function (req, res) {
+	var articleName=req.params.articleName;
+  res.send(createTemplate(articles[articleName]));
 });
 
 app.get('/ui/style.css', function (req, res) {
